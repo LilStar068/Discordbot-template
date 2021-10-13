@@ -4,9 +4,13 @@ from discord import Color, Embed
 from discord.ext import commands
 from discord.ext.commands import BucketType
 
+
 class NoSnipeableMessage(commands.CommandError):
     def __init__(self):
-        super().__init__("There aren't any recent message that have been deleted/edited!")
+        super().__init__(
+            "There aren't any recent message that have been deleted/edited!"
+        )
+
 
 class Snipe(commands.Cog):
     def __init__(self, bot):
@@ -50,6 +54,7 @@ class Snipe(commands.Cog):
                     icon_url=sniped_message.author.avatar_url,
                 )
                 await ctx.reply(embed=result)
+
 
 def setup(bot):
     bot.add_cog(Snipe(bot))
