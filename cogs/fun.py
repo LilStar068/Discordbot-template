@@ -3,6 +3,7 @@ import discord
 import random
 from discord.ext import commands
 
+
 class Fun(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -10,12 +11,16 @@ class Fun(commands.Cog):
     @commands.command()
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def meme(self, ctx):
-        async with self.bot.session.get(f"https://www.reddit.com/r/dankmemes/top.json") as response:
+        async with self.bot.session.get(
+            f"https://www.reddit.com/r/dankmemes/top.json"
+        ) as response:
             j = await response.json()
         data = j["data"][random.randint(1, 10)]["data"]
         image_url = data["url"]
         title = data["title"]
-        em = discord.Embed(description=f"""[**{title}**]({image_url})""", color=ctx.author.color)
+        em = discord.Embed(
+            description=f"""[**{title}**]({image_url})""", color=ctx.author.color
+        )
         em.set_image(url=image_url)
         em.set_footer(icon_url=ctx.author.avatar_url, text=f"Requested by {ctx.author}")
         await ctx.send(embed=em)
@@ -55,7 +60,11 @@ class Fun(commands.Cog):
     async def invite(self, ctx):
         f"""Invite {self.bot.user.name} to your server!"""
         invite_link = f"https://discord.com/oauth2/authorize?client_id={self.bot.user.id}&permissions=8&scope=bot%20applications.commands"
-        em = discord.Embed(title=f"Invite {self.bot.user.name} To Your Server!", description=f"I Am currently in {len(self.bot.guilds)}", url=invite_link)
+        em = discord.Embed(
+            title=f"Invite {self.bot.user.name} To Your Server!",
+            description=f"I Am currently in {len(self.bot.guilds)}",
+            url=invite_link,
+        )
         em.set_thumbnail(url=self.bot.avatar.url)
 
     @commands.command()
@@ -64,8 +73,13 @@ class Fun(commands.Cog):
         hours, remainder = divmod(int(delta_uptime.total_seconds()), 3600)
         minutes, seconds = divmod(remainder, 60)
         days, hours = divmod(hours, 24)
-        e = discord.Embed(title="Uptime", description=f"My Uptime is - `{days}` Days, `{hours}` Hours, `{minutes}` Minutes, `{seconds}` Seconds,", color=discord.Color.green())
+        e = discord.Embed(
+            title="Uptime",
+            description=f"My Uptime is - `{days}` Days, `{hours}` Hours, `{minutes}` Minutes, `{seconds}` Seconds,",
+            color=discord.Color.green(),
+        )
         await ctx.send(embed=e)
+
 
 def setup(bot):
     bot.add_cog(Fun(bot))
