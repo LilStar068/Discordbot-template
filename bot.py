@@ -13,10 +13,11 @@ from discord.ext import commands
 
 
 class Bot(commands.Bot):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, command_prefix=Config.prefix, *args, **kwargs):
         super().__init__(
+            command_prefix=command_prefix,
             intents=discord.Intents.all(),
-            *args,
+            *args, 
             **kwargs,
         )
         self.session = aiohttp.ClientSession()
