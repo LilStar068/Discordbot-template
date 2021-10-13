@@ -2,6 +2,12 @@ import datetime
 import discord
 import random
 from discord.ext import commands
+from utility import ttt
+
+class Invite(discord.ui.View):
+    def __init__(self, url):
+        self.add_item(discord.ui.Button(label="Invite Me!", url=url))
+        self.add_item(discord.ui.Button(label="My GitHub", url="https://github.com/LilWrecker/Discordbot-template/"))
 
 class Fun(commands.Cog):
     def __init__(self, bot):
@@ -55,8 +61,11 @@ class Fun(commands.Cog):
     async def invite(self, ctx):
         f"""Invite {self.bot.user.name} to your server!"""
         invite_link = f"https://discord.com/oauth2/authorize?client_id={self.bot.user.id}&permissions=8&scope=bot%20applications.commands"
-        em = discord.Embed(title=f"Invite {self.bot.user.name} To Your Server!", description=f"I Am currently in {len(self.bot.guilds)}", url=invite_link)
-        em.set_thumbnail(url=self.bot.avatar.url)
+        em = discord.Embed(title=f"Invite {self.bot.user.name} To Your Server!", description=f"I Am currently in {len(self.bot.guilds)} servers!", url=invite_link)
+        # if self.bot.avatar.url is not None:
+        #     em.set_thumbnail(url=self.bot.avatar.url)
+        await ctx.send(embed=em, view=Invite(url=invite_link))
+
 
     @commands.command()
     async def uptime(self, ctx):
@@ -66,6 +75,18 @@ class Fun(commands.Cog):
         days, hours = divmod(hours, 24)
         e = discord.Embed(title="Uptime", description=f"My Uptime is - `{days}` Days, `{hours}` Hours, `{minutes}` Minutes, `{seconds}` Seconds,", color=discord.Color.green())
         await ctx.send(embed=e)
+
+    @commands.command(aliases=["tic", "ttt"])
+    @commands.max_concurrency(1, per=commands.BucketType.guild)
+    async def tictactoe(self, ctx: commands.Context, *, opponent: discord.Member = None):
+        """Start a fully interactive game of tictactoe."""
+
+        if ctx.guild is None:
+            raise commands.NoPrivateMessage
+
+        game = ttt.Game((ctx.author, opponent))
+
+        await ctx.send(f"{game.current_player.mention}'s X goes first!", view=game)
 
 def setup(bot):
     bot.add_cog(Fun(bot))
