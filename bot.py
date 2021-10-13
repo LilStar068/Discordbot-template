@@ -17,7 +17,7 @@ class Bot(commands.Bot):
         super().__init__(
             command_prefix=command_prefix,
             intents=discord.Intents.all(),
-            *args, 
+            *args,
             **kwargs,
         )
         self.session = aiohttp.ClientSession()
