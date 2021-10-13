@@ -155,7 +155,6 @@ class Information(commands.Cog):
 
         await ctx.send(content=f"ℹ About **{user.id}**", embed=embed)
 
-
     @commands.command()
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def about(self, ctx):
@@ -171,7 +170,6 @@ class Information(commands.Cog):
         em.add_field(name="RAM Usage", value="{} MB".format(ram))
         em.add_field(name="Ping", value=round(self.bot.latency * 1000, 1))
         await ctx.send(embed=em)
-
 
     @commands.command(slash_command=True)
     async def covid(self, ctx, *, country: str):
@@ -208,9 +206,12 @@ class Information(commands.Cog):
             )
 
             for name, value in json_data:
-                embed.add_field(name=name, value=f"{value:,}" if isinstance(value, int) else value)
+                embed.add_field(
+                    name=name, value=f"{value:,}" if isinstance(value, int) else value
+                )
 
             await ctx.send(embed=embed)
+
 
 def setup(bot):
     bot.add_cog(Information(bot))

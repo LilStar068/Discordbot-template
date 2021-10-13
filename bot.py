@@ -23,7 +23,7 @@ class Bot(commands.Bot):
         self.uptime = datetime.datetime.now()
         self.config = Config
         self.command_prefix = self.config.prefix
-    
+
     dotenv.load_dotenv(".env")
 
     def loader(self):
@@ -56,7 +56,12 @@ class Bot(commands.Bot):
         print(f"Connected to: {len(cogs)} cogs")
         print(f"Connected to: {len([x for x in self.commands])} commands\n\n")
         self.loader()
-        await self.change_presence(discord.Game(type=discord.ActivityType.watching, name=f"{len(self.guilds)} servers | {self.prefix}help"))
+        await self.change_presence(
+            discord.Game(
+                type=discord.ActivityType.watching,
+                name=f"{len(self.guilds)} servers | {self.prefix}help",
+            )
+        )
 
     async def on_command_error(
         self, ctx: commands.Context, error: commands.CommandError
@@ -74,7 +79,13 @@ class Bot(commands.Bot):
         if isinstance(error, commands.CommandOnCooldown):
             embed = discord.Embed(color=discord.Color.red())
             embed.title = "Command On Cooldown"
-            embed.description = "This Command is on cooldown, try again after `{}`.".format(humanize.naturaldelta(datetime.timedelta(seconds=int(error.retry_after))))
+            embed.description = (
+                "This Command is on cooldown, try again after `{}`.".format(
+                    humanize.naturaldelta(
+                        datetime.timedelta(seconds=int(error.retry_after))
+                    )
+                )
+            )
             return await ctx.send(embed=embed)
 
     async def on_message(self, message):
@@ -82,6 +93,8 @@ class Bot(commands.Bot):
             return
 
         if (f"<@!{self.user.id}>", f"<@{self.user.id}>") in message.content.lower():
-            await message.channel.send(f'Hi, i am {self.bot.user} and my prefix is {self.command_prefix}')
+            await message.channel.send(
+                f"Hi, i am {self.bot.user} and my prefix is {self.command_prefix}"
+            )
 
         self.process_commands(message)

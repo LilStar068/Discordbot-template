@@ -4,6 +4,7 @@ from discord.ext import commands
 from discord.ext.commands import BucketType
 from discord.mentions import A
 
+
 class NoMessagesToSnipe(commands.CommandError):
     def __init__(self):
         super().__init__(
@@ -41,11 +42,11 @@ class Snipe(commands.Cog):
             await ctx.send(commands.help(ctx.command))
 
     @snipe_group.command(name="delete")
-    async def snipe_delete(self, ctx, channel:TextChannel = None):
+    async def snipe_delete(self, ctx, channel: TextChannel = None):
         """Snipe a deleted message"""
-        
+
         channel = channel or ctx.channel
-        
+
         try:
             sniped_message = self.delete_snipes[channel]
             sniped_time = floor(sniped_message.created_at.timestamp())
@@ -64,11 +65,11 @@ class Snipe(commands.Cog):
             await ctx.reply(embed=em)
 
     @snipe_group.command(name="edit")
-    async def snipe_edit(self, ctx, channel:TextChannel = None):
+    async def snipe_edit(self, ctx, channel: TextChannel = None):
         """Snipes an edited message"""
-        
+
         channel = channel or ctx.channel
-        
+
         try:
             before, after = self.edit_snipes[channel]
         except KeyError:
