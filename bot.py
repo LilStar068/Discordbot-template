@@ -11,11 +11,12 @@ import humanize
 from config import Config
 from discord.ext import commands
 
+
 class Bot(commands.Bot):
     def __init__(self, *args, **kwargs):
         super().__init__(
             intents=discord.Intents.all(),
-            *args, 
+            *args,
             **kwargs,
         )
         self.session = aiohttp.ClientSession()
@@ -26,7 +27,11 @@ class Bot(commands.Bot):
     dotenv.load_dotenv(".env")
 
     def loader(self):
-        cogs = [f"cogs.{cog[:-3]}" for cog in os.listdir("cogs") if cog.endswith(".py") and not cog.startswith("_")]
+        cogs = [
+            f"cogs.{cog[:-3]}"
+            for cog in os.listdir("cogs")
+            if cog.endswith(".py") and not cog.startswith("_")
+        ]
         for x in cogs:
             self.load_extension(x)
             print("loaded extension {}".format(x))
@@ -39,7 +44,11 @@ class Bot(commands.Bot):
     async def on_ready(self):
         global uptime
         uptime = datetime.datetime.now()
-        cogs = [cog for cog in os.listdir("cogs") if cog.endswith(".py") and not cog.startswith("_")]
+        cogs = [
+            cog
+            for cog in os.listdir("cogs")
+            if cog.endswith(".py") and not cog.startswith("_")
+        ]
         print(pyfiglet.figlet_format(self.user.name))
         print(f"Logged in as {self.user} (ID: {self.user.id})")
         print(f"Connected to: {len(self.guilds)} guilds")
@@ -49,10 +58,18 @@ class Bot(commands.Bot):
         self.loader()
         await self.change_presence(discord.Game(type=discord.ActivityType.watching, name=f"{len(self.guilds)} servers | {self.prefix}help"))
 
-    async def on_command_error(self, ctx: commands.Context, error: commands.CommandError):
+    async def on_command_error(
+        self, ctx: commands.Context, error: commands.CommandError
+    ):
         if not isinstance(error, commands.CommandOnCooldown):
-            title = " ".join(re.compile(r"[A-Z][a-z]*").findall(error.__class__.__name__))
-            return await ctx.send(embed=discord.Embed(title=title, description=str(error), color=discord.Color.red()))
+            title = " ".join(
+                re.compile(r"[A-Z][a-z]*").findall(error.__class__.__name__)
+            )
+            return await ctx.send(
+                embed=discord.Embed(
+                    title=title, description=str(error), color=discord.Color.red()
+                )
+            )
 
         if isinstance(error, commands.CommandOnCooldown):
             embed = discord.Embed(color=discord.Color.red())

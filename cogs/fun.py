@@ -9,6 +9,7 @@ class Invite(discord.ui.View):
         self.add_item(discord.ui.Button(label="Invite Me!", url=url))
         self.add_item(discord.ui.Button(label="My GitHub", url="https://github.com/LilWrecker/Discordbot-template/"))
 
+
 class Fun(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -16,12 +17,16 @@ class Fun(commands.Cog):
     @commands.command()
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def meme(self, ctx):
-        async with self.bot.session.get(f"https://www.reddit.com/r/dankmemes/top.json") as response:
+        async with self.bot.session.get(
+            f"https://www.reddit.com/r/dankmemes/top.json"
+        ) as response:
             j = await response.json()
         data = j["data"][random.randint(1, 10)]["data"]
         image_url = data["url"]
         title = data["title"]
-        em = discord.Embed(description=f"""[**{title}**]({image_url})""", color=ctx.author.color)
+        em = discord.Embed(
+            description=f"""[**{title}**]({image_url})""", color=ctx.author.color
+        )
         em.set_image(url=image_url)
         em.set_footer(icon_url=ctx.author.avatar_url, text=f"Requested by {ctx.author}")
         await ctx.send(embed=em)
@@ -73,7 +78,11 @@ class Fun(commands.Cog):
         hours, remainder = divmod(int(delta_uptime.total_seconds()), 3600)
         minutes, seconds = divmod(remainder, 60)
         days, hours = divmod(hours, 24)
-        e = discord.Embed(title="Uptime", description=f"My Uptime is - `{days}` Days, `{hours}` Hours, `{minutes}` Minutes, `{seconds}` Seconds,", color=discord.Color.green())
+        e = discord.Embed(
+            title="Uptime",
+            description=f"My Uptime is - `{days}` Days, `{hours}` Hours, `{minutes}` Minutes, `{seconds}` Seconds,",
+            color=discord.Color.green(),
+        )
         await ctx.send(embed=e)
 
     @commands.command(aliases=["tic", "ttt"])

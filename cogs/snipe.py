@@ -6,7 +6,10 @@ from discord.mentions import A
 
 class NoMessagesToSnipe(commands.CommandError):
     def __init__(self):
-        super().__init__("There aren't any recent message that have been deleted/edited!")
+        super().__init__(
+            "There aren't any recent message that have been deleted/edited!"
+        )
+
 
 class Snipe(commands.Cog):
     def __init__(self, bot):
@@ -80,6 +83,7 @@ class Snipe(commands.Cog):
                 icon_url=ctx.author.avatar.url,
             )
             await ctx.reply(embed=em)
+
 
 def setup(bot):
     bot.add_cog(Snipe(bot))
