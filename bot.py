@@ -10,6 +10,7 @@ import humanize
 from config import Config
 from discord.ext import commands
 
+
 class Bot(commands.Bot):
     def __init__(self, *args, **kwargs):
         super().__init__(
@@ -18,7 +19,7 @@ class Bot(commands.Bot):
             token=Config().token,
             allowed_mentions=discord.AllowedMentions.all(),
             owner_ids=Config().owner_id,
-            *args, 
+            *args,
             **kwargs,
         )
         self.session = aiohttp.ClientSession()
@@ -64,7 +65,7 @@ class Bot(commands.Bot):
         await self.change_presence(
             activity=discord.Activity(
                 type=discord.ActivityType.watching,
-                name=f"{len(self.guilds)} servers | {self.prefix}help"
+                name=f"{len(self.guilds)} servers | {self.prefix}help",
             )
         )
 

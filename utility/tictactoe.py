@@ -226,10 +226,14 @@ class Game(discord.ui.View):
 
     async def interaction_check(self, interaction: discord.Interaction):
         if interaction.user not in self.players:
-            await interaction.response.send_message("Sorry, you are not playing", ephemeral=True)
+            await interaction.response.send_message(
+                "Sorry, you are not playing", ephemeral=True
+            )
             return False
         elif interaction.user != self.current_player:
-            await interaction.response.send_message("Sorry, it is not your turn!", ephemeral=True)
+            await interaction.response.send_message(
+                "Sorry, it is not your turn!", ephemeral=True
+            )
         return True
 
     def make_ai_move(self):

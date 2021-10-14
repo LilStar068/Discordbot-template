@@ -8,22 +8,18 @@ from utility import http, embeds
 from io import BytesIO
 from discord.ext import commands
 
+
 class About(discord.ui.View):
     def __init__(self, url):
         super().__init__()
         self.add_item(
             discord.ui.Button(
-                label="Source",
-                url="https://github.com/LilWrecker/Discordbot-template"
+                label="Source", url="https://github.com/LilWrecker/Discordbot-template"
             )
         )
 
-        self.add_item(
-            discord.ui.Button(
-                label="Invite Me!", 
-                url=url
-            )
-        )
+        self.add_item(discord.ui.Button(label="Invite Me!", url=url))
+
 
 class Information(commands.Cog):
     def __init__(self, bot):
@@ -187,8 +183,13 @@ class Information(commands.Cog):
         em.add_field(name="Commands", value=len([x for x in self.bot.commands]))
         em.add_field(name="users", value=len([x for x in self.bot.users]))
         em.add_field(name=f"Developer(s)", value="Lil ツ#6699")
-        em.add_field(name="Liabrary", value=f"Enhanced-Discord.py {discord.__version__}")
-        em.add_field(name="Source", value=f"[Over Here](https://github.com/LilWrecker/Discordbot-template)")
+        em.add_field(
+            name="Liabrary", value=f"Enhanced-Discord.py {discord.__version__}"
+        )
+        em.add_field(
+            name="Source",
+            value=f"[Over Here](https://github.com/LilWrecker/Discordbot-template)",
+        )
 
         em.add_field(name="Adcanced Info", value="_ _", inline=False)
         em.add_field(name="CPU Usage", value="{} %".format(cpu_usage))
@@ -198,7 +199,12 @@ class Information(commands.Cog):
         if self.bot.user.avatar.url is not None:
             em.set_thumbnail(url=self.bot.user.avatar.url)
 
-        await ctx.send(embed=em, view=About(url=f"https://discord.com/oauth2/authorize?client_id={self.bot.user.id}&permissions=8&scope=bot%20applications.commands"))
+        await ctx.send(
+            embed=em,
+            view=About(
+                url=f"https://discord.com/oauth2/authorize?client_id={self.bot.user.id}&permissions=8&scope=bot%20applications.commands"
+            ),
+        )
 
     @commands.command(slash_command=True)
     async def covid(self, ctx, *, country: str):
@@ -251,7 +257,9 @@ class Information(commands.Cog):
         except Exception:
             embed.description = f'Link as: [`png`]({user.display_avatar.replace(format="png").url}) | [`jpg`]({user.display_avatar.replace(format="jpg").url}) | [`webp`]({user.display_avatar.replace(format="webp").url})'
         embed.set_image(url=user.display_avatar.url)
-        embed.set_footer(icon_url=ctx.author.avatar.url, text=f"Requested by {ctx.author.name}")
+        embed.set_footer(
+            icon_url=ctx.author.avatar.url, text=f"Requested by {ctx.author.name}"
+        )
         await ctx.send(embed=embed)
 
     @commands.command(name="ping", slash_command=True)
@@ -268,7 +276,8 @@ class Information(commands.Cog):
 > Typing   : {round(typing_ping, 1)}```
         """
         em = discord.Embed(title="Pong!", description=ping_message, color=0x44C2FB)
-        await msg.edit(embed=em, content='')
+        await msg.edit(embed=em, content="")
+
 
 def setup(bot):
     bot.add_cog(Information(bot))

@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from discord.ext.commands.errors import BadArgument
 
+
 class Plural:
     def __init__(self, value):
         self.value = value
@@ -14,16 +15,17 @@ class Plural:
             return f"{v} {plural}"
         return f"{v} {singular}"
 
+
 def check_role(ctx, member):
     attr = getattr(member, "top_role", None)
     if attr:
         if ctx.author.top_role.position >= member.top_role.position:
-                raise BadArgument("You cannot ban a member if a higher role than you.")
-
+            raise BadArgument("You cannot ban a member if a higher role than you.")
 
 
 def actionmsg(user, action):
     return f"Successfully! {action} {user}"
+
 
 class Moderation(commands.Cog):
 
@@ -36,7 +38,7 @@ class Moderation(commands.Cog):
     @commands.guild_only()
     @commands.has_guild_permissions(kick_members=True)
     async def kick(self, ctx, member: discord.Member, *, reason: str = None):
-        """ Kicks a user from the current server. """
+        """Kicks a user from the current server."""
         check_role(ctx, member)
 
         try:
@@ -50,7 +52,7 @@ class Moderation(commands.Cog):
     @commands.guild_only()
     @commands.has_guild_permissions(ban_members=True)
     async def ban(self, ctx, member: discord.Member, *, reason: str = None):
-        """ Bans a user from the current server. """
+        """Bans a user from the current server."""
         check_role(ctx, (ctx.guild.get_member(member)))
 
         try:
@@ -62,11 +64,11 @@ class Moderation(commands.Cog):
         except Exception as e:
             await ctx.send(e)
 
-
     @commands.command(slash_command=True)
-    
     @commands.has_guild_permissions(kick_members=True)
-    async def mute(self, ctx, *, member: discord.Member = None, reason: str = "Not Specified"):
+    async def mute(
+        self, ctx, *, member: discord.Member = None, reason: str = "Not Specified"
+    ):
         """Mute someone in the server. (Require kick permission)"""
         role = discord.utils.get(ctx.guild.roles, name="Muted")
 
@@ -115,9 +117,10 @@ class Moderation(commands.Cog):
             await member.add_roles(role, reason=reason)
 
     @commands.command(slash_command=True)
-    
     @commands.has_guild_permissions(kick_members=True)
-    async def unmute(self, ctx, *, member: discord.Member = None, reason: str = "Not Specified"):
+    async def unmute(
+        self, ctx, *, member: discord.Member = None, reason: str = "Not Specified"
+    ):
         """Unmute someone in the server. (Require kick permission)"""
         role = discord.utils.get(ctx.guild.roles, name="Muted")
 
@@ -157,7 +160,6 @@ class Moderation(commands.Cog):
             await member.remove_roles(role, reason=reason)
 
     @commands.command(slash_command=True, aliases=["clear"])
-    
     @commands.has_permissions(kick_members=True)
     async def purge(self, ctx, amount=11):
         """Purge spammed messages in the server. (Require kick permission)"""
@@ -172,7 +174,6 @@ class Moderation(commands.Cog):
             await ctx.send(f"Purged {amount} messages sucessfully.", delete_after=3)
 
     @commands.command(slash_command=True)
-    
     @commands.has_permissions(ban_members=True)
     async def massban(self, ctx, members: commands.Greedy[discord.Member], reason):
         """Ban alot of people at the same time in the server. (Require ban permission)"""
@@ -187,7 +188,9 @@ class Moderation(commands.Cog):
                     await ctx.guild.ban(discord.Object(id=int(member)), reason=reason)
                 except (discord.Forbidden, discord.HTTPException):
                     failed += 1
-            await ctx.reply(f"Successfully Banned {len(members)-failed}/{len(members)} members.")
+            await ctx.reply(
+                f"Successfully Banned {len(members)-failed}/{len(members)} members."
+            )
         else:
             await ctx.reply("Cancelled the process.")
 
