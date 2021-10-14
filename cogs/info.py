@@ -1,14 +1,35 @@
+from typing import Union
 import discord
 import psutil
+import os
+import time
 
 from utility import http, embeds
 from io import BytesIO
 from discord.ext import commands
 
+class About(discord.ui.View):
+    def __init__(self, url):
+        super().__init__()
+        self.add_item(
+            discord.ui.Button(
+                label="Source",
+                url="https://github.com/LilWrecker/Discordbot-template"
+            )
+        )
+
+        self.add_item(
+            discord.ui.Button(
+                label="Invite Me!", 
+                url=url
+            )
+        )
 
 class Information(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.process = psutil.Process(os.getpid())
+        self.config = self.bot.config
 
     @commands.command()
     @commands.guild_only()
@@ -158,18 +179,26 @@ class Information(commands.Cog):
     @commands.command()
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def about(self, ctx):
-        ram = self.process.memory_full_info().rss / 1024 ** 2
+        ram = round(self.process.memory_full_info().rss / 1024 ** 2, 1)
         cpu_usage = round(psutil.cpu_percent() / psutil.cpu_count(), 1)
-        em = embeds.emebd(title=f"About {self.bot.user.name} ℹ")
+        em = embeds.embed(title=f"About {self.bot.user.name} ℹ", description=None)
         em.add_field(name="Basic Info", value="_ _", inline=False)
         em.add_field(name="Servers", value=len([x for x in self.bot.guilds]))
         em.add_field(name="Commands", value=len([x for x in self.bot.commands]))
         em.add_field(name="users", value=len([x for x in self.bot.users]))
-        em.add_field(name="Adcanced Info", inline=False)
+        em.add_field(name=f"Developer(s)", value="Lil ツ#6699")
+        em.add_field(name="Liabrary", value=f"Enhanced-Discord.py {discord.__version__}")
+        em.add_field(name="Source", value=f"[Over Here](https://github.com/LilWrecker/Discordbot-template)")
+
+        em.add_field(name="Adcanced Info", value="_ _", inline=False)
         em.add_field(name="CPU Usage", value="{} %".format(cpu_usage))
         em.add_field(name="RAM Usage", value="{} MB".format(ram))
         em.add_field(name="Ping", value=round(self.bot.latency * 1000, 1))
-        await ctx.send(embed=em)
+
+        if self.bot.user.avatar.url is not None:
+            em.set_thumbnail(url=self.bot.user.avatar.url)
+
+        await ctx.send(embed=em, view=About(url=f"https://discord.com/oauth2/authorize?client_id={self.bot.user.id}&permissions=8&scope=bot%20applications.commands"))
 
     @commands.command(slash_command=True)
     async def covid(self, ctx, *, country: str):
@@ -212,6 +241,34 @@ class Information(commands.Cog):
 
             await ctx.send(embed=embed)
 
+    @commands.command(slash_command=True)
+    async def avatar(self, ctx, member: Union[discord.User, discord.Member] = None):
+        """Get someone's avatar."""
+        user = member or ctx.author
+        embed = discord.Embed(title=user.name, description=user.mention, color=0x44C2FB)
+        try:
+            embed.description = f'Link as: [`png`]({user.display_avatar.replace(format="png").url}) | [`jpg`]({user.display_avatar.replace(format="jpg").url}) | [`webp`]({user.display_avatar.replace(format="webp").url}) | [`gif`]({user.display_avatar.replace(format="gif")})'
+        except Exception:
+            embed.description = f'Link as: [`png`]({user.display_avatar.replace(format="png").url}) | [`jpg`]({user.display_avatar.replace(format="jpg").url}) | [`webp`]({user.display_avatar.replace(format="webp").url})'
+        embed.set_image(url=user.display_avatar.url)
+        embed.set_footer(icon_url=ctx.author.avatar.url, text=f"Requested by {ctx.author.name}")
+        await ctx.send(embed=embed)
+
+    @commands.command(name="ping", slash_command=True)
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    async def _ping(self, ctx):
+        """See the bot's ping."""
+        start = time.perf_counter()
+        msg = await ctx.send("pinging...")
+        end = time.perf_counter()
+        typing_ping = (end - start) * 1000
+
+        ping_message = f"""```yaml
+> WebSocket: {round(self.bot.latency*1000, 1)}
+> Typing   : {round(typing_ping, 1)}```
+        """
+        em = discord.Embed(title="Pong!", description=ping_message, color=0x44C2FB)
+        await msg.edit(embed=em, content='')
 
 def setup(bot):
     bot.add_cog(Information(bot))

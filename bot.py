@@ -1,6 +1,5 @@
 import os
 import re
-from discord.mentions import A
 import dotenv
 import discord
 import aiohttp
@@ -13,17 +12,23 @@ from discord.ext import commands
 
 
 class Bot(commands.Bot):
-    def __init__(self, command_prefix=Config.prefix, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super().__init__(
-            command_prefix=command_prefix,
+            command_prefix=Config().prefix,
             intents=discord.Intents.all(),
+            token=Config().token,
+            allowed_mentions=discord.AllowedMentions.all(),
+            owner_ids=Config().owner_id,
             *args, 
             **kwargs,
         )
         self.session = aiohttp.ClientSession()
         self.uptime = datetime.datetime.now()
-        self.config = Config
+        self.config = Config()
         self.command_prefix = self.config.prefix
+        self.prefix = self.config.prefix
+        self.owner_ids = self.config.owner_id
+        self.token = self.config.token
 
     dotenv.load_dotenv(".env")
 
@@ -40,7 +45,7 @@ class Bot(commands.Bot):
         print("loaded extension {}".format("jishaku"))
 
     def run(self) -> None:
-        return super().run(self.config.token, reconnect=True)
+        return super().run(self.token, reconnect=True)
 
     async def on_ready(self):
         global uptime
@@ -58,9 +63,9 @@ class Bot(commands.Bot):
         print(f"Connected to: {len([x for x in self.commands])} commands\n\n")
         self.loader()
         await self.change_presence(
-            discord.Game(
+            activity=discord.Activity(
                 type=discord.ActivityType.watching,
-                name=f"{len(self.guilds)} servers | {self.prefix}help",
+                name=f"{len(self.guilds)} servers | {self.prefix}help"
             )
         )
 
@@ -93,9 +98,9 @@ class Bot(commands.Bot):
         if message.author.bot:
             return
 
-        if (f"<@!{self.user.id}>", f"<@{self.user.id}>") in message.content.lower():
+        if message.content.lower() is (f"<@!{self.user.id}>", f"<@{self.user.id}>"):
             await message.channel.send(
                 f"Hi, i am {self.bot.user} and my prefix is {self.command_prefix}"
             )
 
-        self.process_commands(message)
+        await self.process_commands(message)

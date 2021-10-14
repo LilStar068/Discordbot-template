@@ -1,22 +1,10 @@
-import json
+import os
+import dotenv
 
-
-class Json:
-    def __init__(self):
-        self.config_file = "config/config.json"
-
-    def token(self):
-        with open(self.config_file, "r") as f:
-            item = json.load(f)
-        return item["token"]
-
-    def prefix(self):
-        with open(self.config_file, "r") as f:
-            item = json.load(f)
-        return item["prefix"]
-
+dotenv.load_dotenv(".env")
 
 class Config:
     def __init__(self):
-        self.token = Json.token()
-        self.prefix = Json.prefix()
+        self.token = os.environ.get('TOKEN')
+        self.prefix = os.environ.get('PREFIX')
+        self.owner_id = [696650928907878440]
